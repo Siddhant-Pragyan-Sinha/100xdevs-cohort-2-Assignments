@@ -6,14 +6,12 @@
 // Run each function to see the output, play and learn by doing.
 
 // push()
-function pushExample(arr, element) {
-  console.log("Original Array:", arr);
-
-  arr.push(element);
-  console.log("After push:", arr);
+function pushFunc(arr, ele){
+console.log("array:", nums);
+  arr.push(ele);
+console.log("After push:", arr);
 }
-pushExample([1, 2, 3], 4);
-
+pushFunc([1,2,3,5], 6,8);
 // pop()
 function popExample(arr) {
   console.log("Original Array:", arr);
