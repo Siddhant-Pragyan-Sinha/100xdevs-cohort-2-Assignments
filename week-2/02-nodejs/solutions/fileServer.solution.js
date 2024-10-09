@@ -11,34 +11,75 @@ Example: GET http://localhost:3000/files
     Example: GET http://localhost:3000/file/example.txt
 - For any other route not defined in the server return 404
 Testing the server - run `npm run test-fileServer` command in terminal
-*/
+// */
+// const express = require('express');
+// const fs = require('fs');
+// const path = require('path');
+// const app = express();
+
+// app.get('/files', function (req, res) {
+//     fs.readdir(path.join(__dirname, './files/'), (err, files) => {
+//     if (err) {
+//         return res.status(500).json({ error: 'Failed to retrieve files' });
+//     }
+//     res.json(files);
+//     });
+// });
+
+// app.get('/file/:filename', function (req, res) {
+//     const filepath = path.join(__dirname, './files/', req.params.filename);
+
+//     fs.readFile(filepath, 'utf8', (err, data) => {
+//     if (err) {
+//         return res.status(404).send('File not found');
+//     }
+//     res.send(data);
+//     });
+// });
+
+// app.all('*', (req, res) => {
+//     res.status(404).send('Route not found');
+// });
+
+// module.exports = app;
+
+
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+
 const app = express();
+const PORT = 3000;
+const FILES_DIR = path.join(__dirname, 'files');
 
-app.get('/files', function (req, res) {
-    fs.readdir(path.join(__dirname, './files/'), (err, files) => {
-    if (err) {
-        return res.status(500).json({ error: 'Failed to retrieve files' });
-    }
-    res.json(files);
+// Endpoint to get the list of files
+app.get('/files', (req, res) => {
+    fs.readdir(FILES_DIR, (err, files) => {
+        if (err) {
+            return res.status(500).json({ error: 'Could not list files' });
+        }
+        res.status(200).json(files);
     });
 });
 
-app.get('/file/:filename', function (req, res) {
-    const filepath = path.join(__dirname, './files/', req.params.filename);
-
-    fs.readFile(filepath, 'utf8', (err, data) => {
-    if (err) {
-        return res.status(404).send('File not found');
-    }
-    res.send(data);
+// Endpoint to get the content of a specific file
+app.get('/file/:filename', (req, res) => {
+    const filePath = path.join(FILES_DIR, req.params.filename);
+    fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) {
+            return res.status(404).send('File not found');
+        }
+        res.status(200).send(data);
     });
 });
 
-app.all('*', (req, res) => {
-    res.status(404).send('Route not found');
+// Handle 404 for any other routes
+app.use((req, res) => {
+    res.status(404).send('Not Found');
 });
 
-module.exports = app;
+// Start the server
+app.listen(PORT, () => {
+    console.log(`Server is running at http://localhost:${PORT}`);
+});
+
