@@ -5,14 +5,13 @@
   - Output: 9
 */
 
-const { error } = require("console");
 
 function findLargestElement(numbers) {
     if(numbers.length==0){
-        return undefined
+        return undefined;
     }
-    highest = Math.max(...numbers)
-    return highest
+    let highest = Math.max(...numbers);
+    return highest;
 }
 
 module.exports = findLargestElement;
