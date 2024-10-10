@@ -1,29 +1,26 @@
-const app = require("../01-requestcount");
+const express = require("express");
 
-const request = require('supertest');
-const assert = require('assert');
-describe('GET /user', function() {
-  it('One request responds with 1', function(done) {
-    request(app)
-      .get('/requestCount')
-      .then(response => {
-        expect(response.body.requestCount).toBe(1);
-        done();
-      })
-  });
+const app = express();
 
-  it('10 more requests log 12', function(done) {
-          for (let i = 0; i<10; i++) {
-            request(app)
-                  .get('/user')
-                  .then();
-          }
-          request(app)
-              .get('/requestCount')
-              .then(response => {
-                expect(response.body.requestCount).toBe(12);
-                done();
-              })
-      });
+app.get("/health-checkup", function(req, res){
+  const username = req.headers.username;
+  const password = req.headers.password
+;
+
+const kidneyId= req.query.kidneyId;
+
+  if(!(username === "ranjana" && password === "papa"))
+  if(username != "ranjana" || password != "papa"){
+    res.status(400).json({
+      msg: "Your kidney is fine!"
+    })
+    return 
+  }
+
+  if(kidneyId ==1 || kidneyId ==2){
+    res.json({
+      msg: "Your kidney is fine!"
+    })
+  }
 });
 
