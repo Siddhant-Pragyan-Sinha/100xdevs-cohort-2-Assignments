@@ -12,9 +12,7 @@ const UserSchema = new mongoose.Schema({
     // Schema definition here
 });
 
-const CourseSchema = new mongoose.Schema({
-    // Schema definition here
-});
+
 
 const Admin = mongoose.model('Admin', AdminSchema);
 const User = mongoose.model('User', UserSchema);
