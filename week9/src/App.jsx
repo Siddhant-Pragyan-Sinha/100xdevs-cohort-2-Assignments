@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 function useTodo(n) {
-  const [todo, setTodo] = useState(null); 
+  const [todo, setTodo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -10,7 +10,7 @@ function useTodo(n) {
     axios
       .get("https://dummyjson.com/todos/random")
       .then((res) => {
-        setTodo(res.data); 
+        setTodo(res.data);
         setLoading(false);
       })
       .catch((err) => {
@@ -26,14 +26,14 @@ function useTodo(n) {
 
     getdata();
 
-    return () => clearInterval(interval_ID); 
+    return () => clearInterval(interval_ID);
   }, [n]);
 
   return { todo, loading, error };
 }
 
 function App() {
-  const { todo, loading, error } = useTodo(5); 
+  const { todo, loading, error } = useTodo(5);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -44,9 +44,7 @@ function App() {
   }
 
   return (
-    <div>
-      {todo ? <Track_Todos todo={todo} /> : <div>No Todo found</div>} 
-    </div>
+    <div>{todo ? <Track_Todos todo={todo} /> : <div>No Todo found</div>}</div>
   );
 }
 
