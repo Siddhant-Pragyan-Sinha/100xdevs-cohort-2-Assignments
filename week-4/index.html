@@ -1,61 +1,64 @@
-<!DOCTYPE html>
 <html>
 
-<head>
-  <script>
-    let globalId = 1;
-    let todoState = [];
-    let oldTodoState = [];
+    <div>
+        <input id="title" type="text" placeholder="title">
+        </input>
+        <br></br>
+        <input id="description" type="text" placeholder="description"></input>
+        <br></br>
+        <button onclick="addTodo()">ADD TODO</button>
+    </div>
 
-    function addTodoToDom() {
-      
-    }
 
-    function removeTodoFromDom(todo) {
-      
-    }
-
-    function updateTodoInDom(oldTodo, newTodo) {
+    <script>
+        function createChild(title, description, id){
+            const child = document.createElement("div");
+            const firstGrandParent = document.createElement("div");
+            firstGrandParent.innerHTML = title;
+            const secondGrandParent = document.createElement("div");
+            secondGrandParent.innerHTML = description;
+    
+            const thirdGrandParent = document.createElement("button");
+            thirdGrandParent.innerHTML = "Mark as done";
+            thirdGrandParent.getAttribute = ("onclick", 'markAsDone(${id})');
+            child.appendChild(firstGrandParent);
+            child.appendChild(secondGrandParent);
+            child.appendChild(thirdGrandParent);
+            child.setAttribute("id", id);
+            return child;
+    
+    
+        }
+    
+        function addTodo(){
+            const title = document.getElementById("title").value;
+    
+            const description = document.getElementById("description").value;
+            const originalHtml = document.getElementById("container").innerHTML;
+    
+            //document.createElement
+            document.getElementById("container").innerHTML = originalHtml + <div>
+                <div>${title}</div>
+                <div>${description}</div>
+                <button>Mark as done</button>
+                </div>
+            
+        }
+    
+        function updateDomAccToState(state){
+            const parent = document.getElementById("container")
+            parent.innerHTML = "";
+            for(let i=0; state.length;i++){
+                const child = createChild(state[i].title, state[i].description, state[i].id);
+                parent.appendChild(child); 
+            }
+        }
+    
+        updateDomAccToState([{
+            title: "go to gym",
+            description: "go to gym from 5-7",
+            id: 1
+        }])
         
-    }
-
-    function updateState(newTodos) {
-      // calculate the diff b/w newTodos and oldTodos.
-      // More specifically, find out what todos are - 
-      // 1. added
-      // 2. deleted
-      // 3. updated
-      const added = [];
-      const deleted = [];
-      const updated = [];
-      // calculate these 3 arrays
-      // call addTodo, removeTodo, updateTodo functions on each of the
-      // elements
-      oldTodoState = newTodos;
-    }
-
-    function addTodo() {
-      const title = document.getElementById("title").value;
-      const description = document.getElementById("description").value;
-      todoState.push({
-        title: title,
-        description: description,
-        id: globalId++,
-      })
-      updateState(todoState);
-    }
-  </script>
-</head>
-
-<body>
-  <input type="text" id="title" placeholder="Todo title"></input> <br /><br />
-  <input type="text" id="description" placeholder="Todo description"></input> <br /><br />
-  <button onclick="addTodo()">Add todo</button>
-  <br /> <br />
-
-  <div id="todos">
-
-  </div>
-</body>
-
-</html>
+    </script>
+</html> 
