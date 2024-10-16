@@ -10,3 +10,4 @@ You have to create a simple React App which has a reusable Card Component which 
     - Create a page where you can add these kind of Cards by taking input from the user
     - Create a backend server where these cards get stored in a DB and can handle basic CRUD operations
     - Give the feature to perform CRUD operations from the frontend (Can be restricted to the admin only as well)
+    - ![image](https://github.com/user-attachments/assets/db0a3a4c-fcd9-43c0-a3a9-cbb8dbb89f29)
