@@ -1,13 +1,31 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
-</html>
+
+import React, {Fragment} from "react"
+import {useState} from "react"
+
+
+function App() {
+  const [title, setTitle]= useState("Ranjana is the self made most richest in her entire 2025 college batch");
+
+
+  function updateTitle(){
+    setTitle("my name is" + Math.random());
+  }
+
+  return (
+    <Fragment>
+      <button onClick={updateTitle}>
+        UPDATE TITLE
+      </button>
+
+     <Header title={title}></Header>
+     <Header title="RJHA"></Header>
+    </Fragment>
+  );
+}
+
+function Header({title}){
+  return <div>
+    {title}
+  </div>
+}
+export default App;
