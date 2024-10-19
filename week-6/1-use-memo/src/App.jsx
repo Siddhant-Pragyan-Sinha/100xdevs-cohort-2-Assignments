@@ -1,16 +1,27 @@
-import './App.css'
-import { Assignment1 } from './components/Assignment1'
-import { Assignment2 } from './components/Assignment2'
-import { Assignment3 } from './components/Assignment3'
 
-function App() {
+import {userState, useMemo} from "react";
+
+const factorial = (n)=>{
+  if(n<0) return "Invalid input";
+  if(n==0 || n==1) return 1;
+  return n*factorial(n-1);
+};
+
+export function assignment(){
+  const [input, setInput] = useState(0);
+  const expensiveValue = useMemo(()=> factorial(input), [input]);
+
   return (
-    <>
-      <Assignment1 />
-      {/* <Assignment2 /> */}
-      {/* <Assignment3 /> */}
-    </>
+    <div>
+      <input 
+      type="number"
+      value={input}
+      onChange={(e) => setInput(Number(e.target.value))}
+      />
+      <p>Calculated Value: {expensiveValue}</p>
+    </div>
   )
 }
 
-export default App
+export default app;
+
