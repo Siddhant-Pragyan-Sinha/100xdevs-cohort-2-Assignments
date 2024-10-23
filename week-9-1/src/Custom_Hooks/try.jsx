@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 
-
-
 export default function App() {
   const result = useIsOnline();
   const [count, setCount] = useState(0);
@@ -14,6 +12,7 @@ export default function App() {
       {xy.x},{xy.y}
       {result ? <h1>Online</h1> : <h1>Offline</h1>}
       couunt : {count}
+      <Apps />
     </>
   );
 }
@@ -55,7 +54,7 @@ function useInterval(fn, delay) {
   }, [fn, delay]);
 }
 
-export default function App() {
+function Apps() {
   return (
     <>
       <SearchBar />
