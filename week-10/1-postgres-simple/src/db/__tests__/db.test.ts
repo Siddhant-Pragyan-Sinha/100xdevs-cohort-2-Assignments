@@ -3,15 +3,16 @@ import { createUser, getUser } from '../user';
 import { createTables, dropTables } from '../setup';
 import { createTodo, updateTodo, getTodos } from '../todo';
 
-beforeAll(async () => {
+beforeAll(async ()=>{
     await client.connect();
     await dropTables();
     await createTables();
-});
+})
 
 afterAll(async () => {
     await client.end();
-});
+})
+
 
 describe('User Database Operations', () => {
     test('createUser inserts a new user into the database', async () => {
