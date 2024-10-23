@@ -68,8 +68,9 @@ describe('Todo Operations', () => {
   
     test('getTodos retrieves all todos for a user', async () => {
       // Assuming there are already todos created in previous tests
-      const todos = await getTodos(userId);
-  
+     
+        const todos = await getTodos(userId);
+        
       expect(todos.length).toBeGreaterThan(0);
       todos.forEach(todo => {
         expect(todo).toHaveProperty('id');
