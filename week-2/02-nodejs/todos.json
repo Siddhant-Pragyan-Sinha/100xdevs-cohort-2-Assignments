@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "id": "1",
+    "title": "C++ Assignment",
+    "description": "Assignment done Before Monday",
+    "completed": "true"
+  },
+  {
+    "id": "2",
+    "title": "C Assignment",
+    "description": "Assignment done Before Monday",
+    "completed": "true"
+  }
+]

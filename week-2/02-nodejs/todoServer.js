@@ -39,11 +39,109 @@
 
   Testing the server - run `npm run test-todoServer` command in terminal
  */
-  const express = require('express');
-  const bodyParser = require('body-parser');
-  
-  const app = express();
-  
-  app.use(bodyParser.json());
-  
-  module.exports = app;
+const express = require("express");
+const bodyParser = require("body-parser");
+const fs = require("fs");
+const app = express();
+
+const port = 3000;
+app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }));
+
+app.get("/todos", (req, res) => {
+  fs.readFile("./todos.json","utf-8", (err, data) => {
+    if (err) return res.json({ error: "Error to Fetch Todos" });
+    console.log(data);
+     if (!data) return res.status(404).json({ error: "TODO are Empty" });
+    const TODOs = JSON.parse(data);
+    return res.json(TODOs);
+  });
+});
+
+app.get("/todos/:id", (req, res) => {
+  const id = req.params.id;
+  fs.readFile("./todos.json","utf-8", (err, data) => {
+    if (err) return res.json({ error: "Error to Fetch Todos" });
+    if(!data) return res.json({error: "TODO are Empty"})
+    const TODOs = JSON.parse(data);
+
+    const todoByID = TODOs.filter((todo) => todo.id === id);
+
+    if (!todoByID) return res.json({ Error: "Invalid TODO ID" });
+    return res.json(todoByID);
+  });
+});
+
+app.post("/todos", (req, res) => {
+  const { id, title, description, completed } = req.body;
+  const todo = { id, title, description, completed };
+
+  fs.readFile("./todos.json", "utf-8", (err, data) => {
+    if (err) return res.json({ error: "Error to Fetch Todos" });
+    let TODOs;
+    if (!data) {
+      TODOs = [];
+      TODOs.push(todo);
+    } else {
+      TODOs = JSON.parse(data);
+      TODOs.push(todo);
+    }
+
+    fs.writeFile("./todos.json", JSON.stringify(TODOs), (err) => {
+      if (err) return res.json({ error: "Error to POST Todos" });
+
+      return res.json({ msg: "TODO Added" });
+    });
+  });
+});
+
+app.put("/todos/:id", (req, res) => {
+  var id = req.params.id;
+
+  const Updatetodo = { ...req.body };
+  let check = false;
+  fs.readFile("./todos.json", "utf-8", (err, data) => {
+    if (err) return res.json({ error: "Error to Fetch Todos" });
+    if (!data) return res.json({ error: "TODO are Empty" });
+    let TODOs = JSON.parse(data);
+    TODOs = TODOs.map((todo) => {
+      if (id === todo.id) {
+        check = true;
+        return Updatetodo;
+      } else return todo;
+    });
+    if (!check) res.json({ Error: "Invalid TODO ID" });
+
+    fs.writeFile("./todos.json", JSON.stringify(TODOs), (err) => {
+      if (err) return res.json({ error: "Error to POST Todos" });
+
+      res.json({ mag: "TODO Updated" });
+    });
+  });
+});
+
+app.delete("/todos/:id", (req, res) => {
+  const id = req.params.id;
+  fs.readFile("./todos.json", "utf-8", (err, data) => {
+    if (err) return res.json({ error: "Error to Fetch Todos" });
+    if (!data) return res.json({ error: "TODO are Empty" });
+    let TODOs = JSON.parse(data);
+    let length = TODOs.length;
+
+    TODOs = TODOs.filter((todo) => todo.id !== id);
+
+    if (length === TODOs.length) return res.json({ error: "Invalid TODO ID" });
+
+    fs.writeFile("./todos.json", JSON.stringify(TODOs), (err) => {
+      if (err) return res.json({ error: "Error to POST Todos" });
+
+      res.json({ msg: "TODO Delted sucessfully" });
+    });
+  });
+});
+
+app.listen(port, () => {
+  console.log("App listening on port ", port);
+});
+
+module.exports = app;
