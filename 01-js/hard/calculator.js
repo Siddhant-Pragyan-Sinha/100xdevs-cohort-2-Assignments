@@ -48,7 +48,6 @@ class Calculator {
     if (this.result== Infinity){
       throw new Error("invalid expression")
     }
-
   }
 }
 
