@@ -10,28 +10,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const _1 = require(".");
-function updateDateForAUser(userId) {
+function getUserViaId(userId) {
     return __awaiter(this, void 0, void 0, function* () {
         const client = yield (0, _1.getClient)();
         try {
-            const updateQuery = `
-   UPDATE Insta_App
-   SET first_name = $1 ,last_name = $2
-   Where id = $3
-   `;
-            const res = yield (client === null || client === void 0 ? void 0 : client.query(updateQuery, [
-                "newNameChanged",
-                "newNamechanged23",
-                userId,
-            ]));
-            console.log(res === null || res === void 0 ? void 0 : res.rows);
+            const getQuery = `
+      SELECT * FROM Insta_App
+      WHERE id = $1
+    `;
+            const res = yield (client === null || client === void 0 ? void 0 : client.query(getQuery, [userId]));
+            console.log("User data:", res === null || res === void 0 ? void 0 : res.rows[0]);
         }
         catch (e) {
-            console.log(e);
+            console.log("Error:", e);
         }
         finally {
             client === null || client === void 0 ? void 0 : client.end();
         }
     });
 }
-updateDateForAUser(9);
+getUserViaId(9);
