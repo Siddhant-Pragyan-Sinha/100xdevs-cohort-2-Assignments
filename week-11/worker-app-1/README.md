@@ -2,7 +2,7 @@ import { Router } from 'itty-router';
 import jwt from 'jsonwebtoken';
 
 const router = Router();
-const secret = 'your_secret_key'; // Use an environment variable in production
+const secret = 'your_secret_key'; // Use an environment variable in productio
 
 // User Management
 const users = new Map(); // Replace with KV or Durable Objects in production
