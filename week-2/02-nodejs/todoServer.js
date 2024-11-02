@@ -43,7 +43,68 @@
   const bodyParser = require('body-parser');
   
   const app = express();
+  const PORT = 3000;
   
   app.use(bodyParser.json());
   
+
+let todos = [];
+let nextId = 1;
+
+app.get('/todos', (req, res) => {
+  res.status(200).json({todos});
+});
+
+app.get('/todos/:id', (req, res) => {
+  const todoId = Number(req.params.id);
+  const todo = todos.find(t => t.id === todoId);
+  if(!todoId){
+  return res.status(404).send('Not Found');
+  }
+  res.status(200).json(todo);
+});
+
+app.post('/todos', (req, res) => {
+  const {title, description, completed} = req.body;
+  if(!title || !description){
+    return res.status(404);
+  }
+  const newTodo = {id: nextId++, title, completed, description};
+  
+  todos.push(newTodo);
+  res.status(201).json({ id: newTodo.id });
+})
+
+app.put('/todos/:id', (req, res) => {
+  const id = Number(req.params.id);
+  const {title, description} = req.body;
+  const todo = todos.find(t => t.id == id);
+  if(!todo){
+    return res.status(404);
+  }
+  if (title) 
+    todo.title = title;
+  if (description) 
+    todo.description = description;
+  res.status(200);
+})
+
+app.delete('/todos/:id', (req, res) => {
+  const todoId = Number(req.params.id);
+  const index = todos.findIndex(todo => todo.id === todoId);
+  if(index === -1){
+    return res.status(404);
+  }
+  todos.splice(index, 1);
+  res.status(200);
+})
+
+app.use((req, res) => {
+  res.status(404).send('Route not found');
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}/`);
+});
+
   module.exports = app;

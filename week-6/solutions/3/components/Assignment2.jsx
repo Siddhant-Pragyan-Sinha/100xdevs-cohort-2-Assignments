@@ -19,6 +19,6 @@ export function Assignment2() {
         <div>
             <p>This component has rendered {numberOfTimesReRendered.current} times.</p>
             <button onClick={handleReRender}>Force Re-render</button>
-        </div>
+        </div> 
     );
 };

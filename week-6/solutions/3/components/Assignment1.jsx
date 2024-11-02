@@ -18,6 +18,6 @@ export function Assignment1() {
         <div>
             <input ref={inputRef} type="text" placeholder="Enter text here" />
             <button onClick={handleButtonClick}>Focus Input</button>
-        </div>
+        </div> 
     );
 };

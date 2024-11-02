@@ -5,6 +5,17 @@
 */
 
 function isAnagram(str1, str2) {
+    const normal1 = str1.toLowerCase();
+    const normal2 = str2.toLowerCase();
+
+    if(normal1.length !== normal2.length){
+      return false;
+    }
+
+    const sorted1 = normal1.split("").sort().join("");
+    const sorted2 =  normal2.split("").sort().join("");
+    
+    return sorted1 === sorted2;
 
 }
 

@@ -24,14 +24,14 @@ function findLastIndexOf(str, target) {
   console.log("Original String:", str);
   console.log("Index:", str.lastIndexOf(target));
 }
-findLastIndexOf("Hello World World", "World");
+findLastIndexOf("Hello Hi World ", "World");
 
 // slice
 function getSlice(str, start, end) {
   console.log("Original String:", str);
   console.log("After slice:", str.slice(start, end));
 }
-getSlice("Hello World", 0, 5);
+getSlice("Hello0 World", 0, 5);
 
 // substring
 function getSubstring(str, start, end) {
