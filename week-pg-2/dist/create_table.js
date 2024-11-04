@@ -13,25 +13,29 @@ const index_1 = require("./index");
 function createTable() {
     return __awaiter(this, void 0, void 0, function* () {
         const client = yield (0, index_1.getClient)();
+        if (!client) {
+            console.error("Failed to connect to the database.");
+            return;
+        }
         try {
             const createTableQuery = `
-    CREATE TABLE Insta_App (
-    ID SERIAL PRIMARY KEY,
-    first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    create_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    )
+      CREATE TABLE IF NOT EXISTS Insta_App (
+        ID SERIAL PRIMARY KEY,
+        first_name VARCHAR(100) NOT NULL,
+        last_name VARCHAR(100) NOT NULL,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        create_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      )
     `;
-            const result = yield (client === null || client === void 0 ? void 0 : client.query(createTableQuery));
-            console.log("The Result is", result);
+            const result = yield client.query(createTableQuery);
+            console.log("Insta_App table created:", result);
         }
         catch (e) {
-            console.log("Something went while creating the instausers Table");
+            console.error("Error creating Insta_App table:", e);
         }
         finally {
-            client === null || client === void 0 ? void 0 : client.end();
+            yield (client === null || client === void 0 ? void 0 : client.end());
         }
     });
 }
