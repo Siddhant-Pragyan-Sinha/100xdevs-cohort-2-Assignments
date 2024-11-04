@@ -1,19 +1,30 @@
 import { PrismaClient } from '@prisma/client/edge';
 import { withAccelerate } from '@prisma/extension-accelerate';
-
 import { Context } from 'hono';
 
 enum StatusCode {
   BADREQ = 400,
   NOTFOUND = 404,
-  NOTPERMISSIOON = 403,
+  NOTPERMISSION = 403,
 }
 
-export async function getPosts(c: Context) {
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
+const prisma = new PrismaClient({
+  datasourceUrl: process.env.DATABASE_URL,
+}).$extends(withAccelerate());
 
+// Utility function to handle errors
+const handleError = (c: Context, error: any, statusCode: number = 500) => {
+  console.error(error); // Log the error for debugging
+  return c.json({ message: 'Internal server error', error: error.message }, statusCode);
+};
+
+// Utility function to parse tags
+const parseTags = (tags: string) => {
+  return tags.split(',').map(tag => tag.trim()).filter(Boolean);
+};
+
+// Get all posts
+export async function getPosts(c: Context) {
   try {
     const response = await prisma.posts.findMany({
       include: {
@@ -22,7 +33,7 @@ export async function getPosts(c: Context) {
       },
     });
     return c.json({
-      post: response.map((res) => ({
+      post: response.map(res => ({
         id: res.id,
         username: res.User.username,
         userId: res.User.id,
@@ -33,204 +44,104 @@ export async function getPosts(c: Context) {
       })),
     });
   } catch (error) {
-    return c.body(`Internal server error: ${error}`, 500);
+    return handleError(c, error);
   }
 }
 
+// Get posts by user
 export async function getUserPosts(c: Context) {
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
-
   try {
-    const resp = await prisma.posts.findMany({
-      where: {
-        userId: c.get('userId'),
-      },
-    });
-    return c.json({
-      post: resp,
-    });
+    const userId = c.get('userId');
+    const resp = await prisma.posts.findMany({ where: { userId } });
+    return c.json({ post: resp });
   } catch (error) {
-    return c.body(`Internal server error: ${error}`, 500);
+    return handleError(c, error);
   }
 }
 
+// Create a new post
 export async function createPost(c: Context) {
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
-
   try {
-    const body: {
-      title: string;
-      body: string;
-      tags: string;
-    } = await c.req.json();
+    const { title, body, tags } = await c.req.json();
+    const userId = c.get('userId');
 
-    const tagNames = body.tags.split(',').map((tag) => tag.trim());
-
-    if ((body.body && body.title) == null) {
+    if (!title || !body) {
       return c.body('Invalid user input', StatusCode.BADREQ);
     }
+
+    const tagNames = parseTags(tags);
     const res = await prisma.posts.create({
       data: {
-        title: body.title,
-        body: body.body,
-        userId: c.get('userId'),
+        title,
+        body,
+        userId,
         tags: {
-          connectOrCreate: tagNames.map((tag) => ({
+          connectOrCreate: tagNames.map(tag => ({
             where: { tag },
             create: { tag },
           })),
         },
       },
-      include: {
-        tags: true,
-      },
+      include: { tags: true },
     });
 
     return c.json({
-      message: 'Post successfully',
+      message: 'Post created successfully',
       post: {
         id: res.id,
         title: res.title,
         body: res.body,
-        tags: res.tags.map((tag) => tag.tag),
+        tags: res.tags.map(tag => tag.tag),
         createdAt: res.createdAt,
       },
     });
   } catch (error) {
-    return c.body(`Internal server error: ${error}`, 500);
+    return handleError(c, error);
   }
 }
 
+// Get a specific post
 export async function getPost(c: Context) {
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
-
   try {
-    const id: number = Number(c.req.param('id'));
+    const id = Number(c.req.param('id'));
+    const userId = c.get('userId');
 
-    const isPostExist = await prisma.posts.findFirst({
-      where: {
-        id: id,
-        userId: c.get('userId'),
-      },
-      include: {
-        tags: true,
-      },
+    const post = await prisma.posts.findFirst({
+      where: { id, userId },
+      include: { tags: true },
     });
 
-    if (isPostExist == null) {
-      return c.body('Post does not exists', StatusCode.NOTFOUND);
+    if (!post) {
+      return c.body('Post does not exist', StatusCode.NOTFOUND);
     }
+
     return c.json({
       data: {
-        id: isPostExist.id,
-        title: isPostExist.title,
-        body: isPostExist.body,
-        tags: isPostExist.tags,
-        createdAt: isPostExist.createdAt,
+        id: post.id,
+        title: post.title,
+        body: post.body,
+        tags: post.tags,
+        createdAt: post.createdAt,
       },
     });
   } catch (error) {
-    return c.body(`Internal server error: ${error}`, 500);
+    return handleError(c, error);
   }
 }
 
-// this controller update the specific post
+// Update a specific post
 export async function updatePost(c: Context) {
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
-
   try {
-    const id: number = Number(c.req.param('id'));
+    const id = Number(c.req.param('id'));
+    const { title, body, tags } = await c.req.json();
+    const userId = c.get('userId');
 
-    const body: {
-      title: string;
-      body: string;
-      tags: string;
-    } = await c.req.json();
-
-    const tagNames = body.tags.split(',').map((tag) => tag.trim());
-
-    const isPostExist = await prisma.posts.findFirst({
-      where: {
-        id: id,
-        userId: c.get('userId'),
-      },
+    const post = await prisma.posts.findFirst({
+      where: { id, userId },
     });
 
-    if (isPostExist == null) {
-      return c.body('Post does not exists', StatusCode.NOTFOUND);
+    if (!post) {
+      return c.body('Post does not exist', StatusCode.NOTFOUND);
     }
 
-    const res = await prisma.posts.update({
-      where: {
-        id: id,
-        userId: c.get('userId'),
-      },
-      data: {
-        title: body.title,
-        body: body.body,
-        tags: {
-          connectOrCreate: tagNames.map((tag) => ({
-            where: { tag },
-            create: { tag },
-          })),
-        },
-      },
-      include: {
-        tags: true,
-      },
-    });
-
-    return c.json({
-      data: {
-        id: res.id,
-        title: res.title,
-        body: res.body,
-        tags: res.tags,
-        createdAt: res.createdAt,
-      },
-    });
-  } catch (error) {
-    return c.body(`Internal server error: ${error}`, 500);
-  }
-}
-
-export async function deletePost(c: Context) {
-  const prisma = new PrismaClient({
-    datasourceUrl: c.env.DATABASE_URL,
-  }).$extends(withAccelerate());
-
-  try {
-    const id: number = Number(c.req.param('id'));
-
-    const isPostExist = await prisma.posts.findFirst({
-      where: {
-        id: id,
-        userId: c.get('userId'),
-      },
-    });
-
-    if (isPostExist == null) {
-      return c.body('Post does not exists', StatusCode.NOTFOUND);
-    }
-
-    const res = await prisma.posts.delete({
-      where: {
-        id: id,
-        userId: c.get('userId'),
-      },
-    });
-    return c.json({
-      message: 'post deleted',
-    });
-  } catch (error) {
-    return c.json({ msg: `Internal server error: ${error}` }, 500);
-  }
-}
+    const
