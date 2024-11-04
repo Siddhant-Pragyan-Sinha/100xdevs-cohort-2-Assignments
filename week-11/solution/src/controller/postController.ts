@@ -234,3 +234,14 @@ export async function deletePost(c: Context) {
     return c.json({ msg: `Internal server error: ${error}` }, 500);
   }
 }
+
+
+// Error Handling: Centralized error handling with a handleError utility function that logs errors and returns a consistent response.
+
+// Tag Parsing: Moved tag parsing logic into a separate parseTags function to improve readability and reusability.
+
+// Single Prisma Client Instance: Instead of creating a new PrismaClient instance in every function, it now uses a single instance, which is more efficient.
+
+// Code Readability: Enhanced code readability by using destructuring and more descriptive variable names.
+
+// Response Messages: Improved response messages for clarity.
