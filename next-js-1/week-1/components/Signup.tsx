@@ -1,4 +1,9 @@
-export default function Signin() {
+"use client"
+export default function Signup() {
+  function handler(){
+    console.log("hi therer");
+    
+  }
   return (
     <div className="h-screen flex justify-center flex-col">
       <div className="flex justify-center">
@@ -8,23 +13,21 @@ export default function Signin() {
         >
           <div>
             <div className="px-10">
-              <div className="text-3xl font-extrabold">Sign in</div>
+              <div className="text-3xl font-extrabold">Sign Up</div>
             </div>
             <div className="pt-2">
-              <LabelledInput
-                label="Username"
-                placeholder="harkirat@gmail.com"
-              />
+              <LabelledInput label="Username" placeholder="Example@gmail.com" />
               <LabelledInput
                 label="Password"
                 type={"password"}
                 placeholder="123456"
               />
               <button
+                onClick={handler}
                 type="button"
                 className="mt-8 w-full text-white bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2"
               >
-                Sign in
+                Sign Up
               </button>
             </div>
           </div>
