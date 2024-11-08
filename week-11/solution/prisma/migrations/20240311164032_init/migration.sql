@@ -1,52 +1,43 @@
--- CreateTable
-CREATE TABLE "User" (
-    "id" SERIAL NOT NULL,
-    "username" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
-
-    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+-- Create User Table
+CREATE TABLE "Users" (
+    "id" SERIAL PRIMARY KEY,
+    "username" VARCHAR(255) NOT NULL,
+    "email" VARCHAR(255) NOT NULL UNIQUE,
+    "password" TEXT NOT NULL
 );
 
--- CreateTable
+-- Create Posts Table
 CREATE TABLE "Posts" (
-    "id" SERIAL NOT NULL,
+    "id" SERIAL PRIMARY KEY,
     "title" TEXT NOT NULL,
     "body" TEXT NOT NULL,
-    "userId" INTEGER NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "user_id" INTEGER NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "Posts_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Posts_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "Users"("id")
+        ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
--- CreateTable
+-- Create Tags Table
 CREATE TABLE "Tags" (
-    "id" SERIAL NOT NULL,
-    "tag" TEXT NOT NULL,
-
-    CONSTRAINT "Tags_pkey" PRIMARY KEY ("id")
+    "id" SERIAL PRIMARY KEY,
+    "tag" VARCHAR(255) NOT NULL UNIQUE
 );
 
--- CreateTable
-CREATE TABLE "_PostsToTags" (
-    "A" INTEGER NOT NULL,
-    "B" INTEGER NOT NULL
+-- Create PostTags Join Table
+CREATE TABLE "PostTags" (
+    "post_id" INTEGER NOT NULL,
+    "tag_id" INTEGER NOT NULL,
+    PRIMARY KEY ("post_id", "tag_id"),
+
+    CONSTRAINT "PostTags_post_id_fkey" FOREIGN KEY ("post_id") REFERENCES "Posts"("id")
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "PostTags_tag_id_fkey" FOREIGN KEY ("tag_id") REFERENCES "Tags"("id")
+        ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- CreateIndex
-CREATE UNIQUE INDEX "Tags_tag_key" ON "Tags"("tag");
+-- Create Indexes
+CREATE INDEX "idx_Posts_user_id" ON "Posts"("user_id");
+CREATE INDEX "idx_PostTags_tag_id" ON "PostTags"("tag_id");
 
--- CreateIndex
-CREATE UNIQUE INDEX "_PostsToTags_AB_unique" ON "_PostsToTags"("A", "B");
-
--- CreateIndex
-CREATE INDEX "_PostsToTags_B_index" ON "_PostsToTags"("B");
-
--- AddForeignKey
-ALTER TABLE "Posts" ADD CONSTRAINT "Posts_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_PostsToTags" ADD CONSTRAINT "_PostsToTags_A_fkey" FOREIGN KEY ("A") REFERENCES "Posts"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_PostsToTags" ADD CONSTRAINT "_PostsToTags_B_fkey" FOREIGN KEY ("B") REFERENCES "Tags"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+-- Optional: Add more indexes if necessary depending on the queries you'll run most often.
