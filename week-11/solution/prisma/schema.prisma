@@ -7,30 +7,33 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  url       = env("DATABASE_URL")  // Connection string to your PostgreSQL database
+  directUrl = env("DIRECT_URL")     // Optional direct URL for database connections
 }
 
+// User model representing the users of the blogging platform
 model User {
-  id       Int     @id @default(autoincrement())
-  username String
-  email    String
-  password String
-  posts    Posts[]
+  id       Int      @id @default(autoincrement()) // Unique identifier
+  username String   @unique                     // Unique username
+  email    String   @unique                     // Unique email
+  password String                                // Hashed password
+  posts    Posts[]  @relation("UserPosts")      // Relation to Posts
 }
 
+// Posts model representing individual blog posts
 model Posts {
-  id     Int      @id @default(autoincrement())
-  title  String
-  body   String
-  tags   Tags[]
-  User   User     @relation(fields: [userId], references: [id])
-  userId Int
-  createdAt  DateTime   @default(now())
+  id        Int      @id @default(autoincrement()) // Unique identifier
+  title     String                                 // Title of the post
+  body      String                                 // Content of the post
+  tags      Tags[]                                  // Relation to Tags
+  user      User    @relation("UserPosts", fields: [userId], references: [id]) // Relation to User
+  userId    Int                                     // Foreign key to User
+  createdAt DateTime @default(now())                // Timestamp for creation
 }
 
+// Tags model representing tags that can be associated with posts
 model Tags {
-  id Int @id @default(autoincrement())
-  tag String @unique
-  post Posts[]
+  id   Int     @id @default(autoincrement()) // Unique identifier
+  tag  String  @unique                        // Unique tag name
+  post Posts[]                               // Relation to Posts
 }
