@@ -5,7 +5,7 @@
 */
 
 function isAnagram(str1, str2) {
-
+    return str2.split('').every(i => str1.split('').includes(i)) && str1.split('').every(i => str2.split('').includes(i))
 }
 
 module.exports = isAnagram;
