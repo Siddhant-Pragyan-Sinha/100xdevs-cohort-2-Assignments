@@ -9,5 +9,23 @@ There is no automated test for this one, this is more for you to understand time
 */
 
 function calculateTime(n) {
-    return 0.01;
+    let sum = 0;
+    for(let i=1; i<=n; i++)
+        {
+            sum += i;
+        }
+
+        return sum;
 }
+
+const startTime = performance.now();
+// calculateTime(100); //it takes -0.1337... time to run this code
+// calculateTime(100000);   // It takes -4.1076... time to run this code
+calculateTime(1000000000);   // It takes -2809.987499999.. time to run this code
+const endTime = performance.now();
+
+const executionTime = startTime - endTime;
+
+console.log("Execution Time : ", executionTime, " Milliseconds");
+
+

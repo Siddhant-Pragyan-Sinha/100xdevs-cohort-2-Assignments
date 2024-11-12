@@ -1,3 +1,5 @@
+
+
 /**
   You need to create an express HTTP server in Node.js which will handle the logic of a todo list app.
   - Don't use any database, just store all the data in an array to store the todo list data (in-memory)
@@ -39,11 +41,117 @@
 
   Testing the server - run `npm run test-todoServer` command in terminal
  */
-  const express = require('express');
-  const bodyParser = require('body-parser');
+  const express = require("express");
+  const bodyParser = require("body-parser");
+  const fs = require("fs");
+  const path = require("path");
+  const http = require('http');
+  const { v4: uuidv4 } = require('uuid'); 
   
+  const port = 4000;
+
+
   const app = express();
-  
+
+  //This is the Middleware to parse the json request body 
   app.use(bodyParser.json());
-  
+
+  //Arrays to store todo Item 
+  let todos = [];
+
+  //Below is the helper function to save the todos in a file
+  function saveTodoasaFile() {
+    const filepath = path.join(__dirname, 'todos.json');
+    fs.writeFileSync(filepath, JSON.stringify(todos), 'utf-8');
+  }
+
+
+  //The below is the post request to save the todo item inside a file
+  app.post("/todos", (req, res) => {
+    const {title , description,isCompleted} = req.body;
+    const newtodo = {
+      id : todos.length + 1,
+      title, 
+      description,
+      isCompleted
+    };
+    todos.push(newtodo);
+    saveTodoasaFile();
+    res.status(201).json({id : newtodo.id});
+  })
+
+  app.get("/todos", (req,res) => {
+    res.status(200).json(todos);
+  });
+
+ function loaddatafromfile()
+ {
+  const filepath = path.join(__dirname, 'todos.json');
+  if(fs.existsSync(filepath))
+  {
+    const fileData = fs.readFileSync(filepath, 'utf-8');
+    todos = JSON.parse(fileData);
+  }
+ }
+
+ loaddatafromfile()
+
+  app.get("/todos/:id", (req,res) => {
+    var id = req.params.id;
+    const index = todos.find((item) => item.id === parseInt(id));
+    if(index)
+    {
+      res.status(200).json(index);
+    }
+    else 
+    {
+      res.status(404).send("Something went wrong");
+    }
+  });
+
+  app.delete("/todos/:id", (req,res) => {
+    var id = req.params.id;
+    const index = todos.findIndex((item) => item.id === parseInt(id));
+    if(index !== -1)
+    {
+     const deletedTodo =  todos.splice(index, 1);
+     saveTodoasaFile();
+      res.status(200).json(deletedTodo);
+    }
+    else 
+    {
+      res.status(404).send("Something went wrong while deleting the data from the json file");
+    }
+  });
+
+  app.delete("/todos", (req,res) => {
+    todos = [];
+    saveTodoasaFile();
+    res.status(200).send("All Todo's items has been deleted from the json file");
+  })
+
+  app.put("/todos/:id", (req,res) => {
+    var id = req.params.id;
+    const {title, description, isCompleted} = req.body;
+    const index = todos.findIndex((item) => item.id === parseInt(id));
+    if(index !== -1)
+    {
+      todos[index] = {
+        id : parseInt(id),
+        title : title,
+        description : description,
+        isCompleted : isCompleted
+      };
+      saveTodoasaFile();
+
+      res.status(200).json(todos[index]);
+    }else 
+    {
+      res.status(404).send("An Error Occured while updating");
+    }
+  })
+  app.listen(port, (req, res) => {
+    console.log(`Server is running on the port no. ${port}`);
+  })
+
   module.exports = app;
