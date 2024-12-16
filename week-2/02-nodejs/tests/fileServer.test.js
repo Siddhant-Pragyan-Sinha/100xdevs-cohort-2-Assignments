@@ -3,6 +3,11 @@ const path = require('path');
 const fs = require('fs');
 const server = require('../fileServer');
 
+const closeServer = (_server) => {
+  console.log(_server);
+  _server.close();
+};
+
 describe('API Endpoints', () => {
   let globalServer;
 
@@ -11,11 +16,13 @@ describe('API Endpoints', () => {
         globalServer.close();
     }
     globalServer = server.listen(3000);
-    done()
+    done();
   });
 
   afterAll((done) => {
-    globalServer.close(done);
+    closeServer(globalServer);
+    closeServer(server);
+    done();
   });
 
   describe('GET /files', () => {
@@ -38,7 +45,7 @@ describe('API Endpoints', () => {
 
       const directoryPath = path.resolve(__dirname, '../files/');
       jest
-        .spyOn(fs, 'readdir')
+        .spyOn(fs, 'readdirSync')
         .mockImplementation((directoryPath, callback) => {
           callback(new Error('Mocked Internal Server Error'), null);
         });
@@ -47,7 +54,7 @@ describe('API Endpoints', () => {
 
       expect(response.statusCode).toBe(500);
 
-      fs.readdir.mockRestore();
+      fs.readdirSync.mockRestore();
     });
   });
 

@@ -4,15 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "test-fileServer": "./node_modules/jest/bin/jest.js ./tests/fileServer.test.js",
-    "test-todoServer": "./node_modules/jest/bin/jest.js ./tests/todoServer.test.js"
+    "test-fileServer": "jest ./tests/fileServer.test.js",
+    "test-todoServer": "jest ./tests/todoServer.test.js",
+    "start-fileServer": "nodemon fileServer.js",
+    "start-todoServer": "nodemon todoServer.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "jest": "^29.5.0",
+    "nodemon": "^3.1.0",
     "supertest": "^6.3.3"
   },
   "jest": {

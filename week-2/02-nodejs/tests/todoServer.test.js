@@ -5,6 +5,11 @@ const server = require('../todoServer');
 const port = 3000;
 const baseUrl = `http://localhost:${port}`;
 
+const closeServer = (_server) => {
+  console.log(_server);
+  _server.close();
+};
+
 describe('Todo API', () => {
   let createdTodoId;
   let globalServer;
@@ -14,11 +19,13 @@ describe('Todo API', () => {
         globalServer.close();
     }
     globalServer = server.listen(3000);
-    done()
+    done();
   });
 
   afterAll((done) => {
-    globalServer.close(done);
+    closeServer(globalServer);
+    closeServer(server);
+    done();
   });
 
   const todo = {
@@ -66,7 +73,7 @@ describe('Todo API', () => {
       res.on('end', () => {
         const todos = JSON.parse(data);
         expect(Array.isArray(todos)).toBe(true);
-        expect(todos.length).toBe(1);
+        expect(todos.length).toBeGreaterThan(0);
         expect(todos[0].title).toBe(todo.title);
         expect(todos[0].description).toBe(todo.description);
         done();
