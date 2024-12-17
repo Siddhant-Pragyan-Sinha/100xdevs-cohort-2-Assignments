@@ -47,3 +47,61 @@
   app.use(bodyParser.json());
   
   module.exports = app;
+
+  const todos = [];
+  let id = 1;
+
+  app.get("/todos",function(req,res){
+    res.status(200).json(todos);
+  })
+
+  app.get("/todos/:id",function(req,res){
+    const todo = todos.find(t => t.id == parseInt(req.params.id));
+    if (!todo){
+      res.status(404).json({msg: "item not found"});
+    } else {
+      res.status(200).json(todo);
+    }
+  })
+
+  app.post("/todos",function(req,res){
+    const newToDo = {
+      id : id,
+      title  : req.body.title,
+      description : req.body.description,
+      completed : req.body.completed
+
+    }
+    todos.push(newToDo);
+    res.status(201).json({id : id});
+    id++;
+  })
+
+  app.put("/todos/:id",function(req,res){
+    const todoIndex = todos.findIndex(t => t.id == parseInt(req.params.id));
+    if (todoIndex == -1) {
+      res.sendStatus(404).send("Not Found");
+    } else {
+      todos[todoIndex].title = req.body.title;
+      todos[todoIndex].completed = req.body.description;
+      res.status(200).json(todos[todoIndex]);
+    }
+  })
+
+
+
+  app.delete('/todos/:id', (req, res) => {
+    const todoIndex = todos.findIndex(t => t.id === parseInt(req.params.id));
+    if (todoIndex === -1) {
+      res.status(404).send();
+    } else {
+      todos.splice(todoIndex, 1);
+      res.status(200).send();
+    }
+  });
+
+  app.use((req,res) =>{
+    res.sendStatus(404).json({
+      msg : "Page not found"
+    });
+  })

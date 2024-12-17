@@ -16,6 +16,17 @@ setInterval(() => {
     numberOfRequestsForUser = {};
 }, 1000)
 
+//middle ware
+app.use((req,res,next) =>{
+  const id = req.headers["user-id"];
+  numberOfRequestsForUser[id] = numberOfRequestsForUser[id] || 0;
+  if (numberOfRequestsForUser[id] >= 5) {
+    return res.status(404).json({msg : "Rate limit exceeded"});
+  }
+  numberOfRequestsForUser[id]++;
+  next();
+});
+
 app.get('/user', function(req, res) {
   res.status(200).json({ name: 'john' });
 });
